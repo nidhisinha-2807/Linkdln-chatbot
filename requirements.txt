@@ -4,3 +4,4 @@ langgraph==0.4.5
 python-dotenv==1.1.0
 requests==2.32.3
 groq==0.26.0
+apify-client

@@ -17,7 +17,7 @@ from agents.content_enhancer import ContentEnhancerAgent
 from agents.career_counselor import CareerCounselorAgent
 from memory.memory_manager import MemoryManager
 
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-120b"
 
 
 # ─────────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ class AgentState(TypedDict):
 def call_llm(prompt: str, system: str = "", history: list = None,
              max_tokens: int = 2048) -> str:
     """
-    Call Llama 3.3 70B via Groq.
+    Call GPT-OSS 120B via Groq.
     Free tier: 14,400 requests/day, 500,000 tokens/day.
     """
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))

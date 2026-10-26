@@ -1,11 +1,11 @@
-"""Career Counseling Agent — powered by Llama 3.3 70B via Groq (free)."""
+"""Career Counseling Agent — powered by GPT-OSS 120B via Groq."""
 
 import os
 from groq import Groq
 from prompts.prompt_templates import CAREER_COUNSELOR_PROMPT
 from tools.linkedin_scraper import format_profile_for_prompt
 
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-120b"
 
 
 class CareerCounselorAgent:

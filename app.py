@@ -1,6 +1,6 @@
 """
 LinkedIn Profile Optimizer — Streamlit App
-Groq (Llama 3.3 70B) + LangGraph + Apify URL scraping + LinkedIn PDF
+Groq (GPT-OSS 120B) + LangGraph + Apify URL scraping + LinkedIn PDF
 """
 
 import streamlit as st
@@ -464,7 +464,7 @@ def render_sidebar():
         <div class="sidebar-brand">
             <div class="sidebar-brand-title">💼 LinkedIn Optimizer</div>
         </div>
-        <span class="free-badge">FREE</span>
+        <span class="free-badge">GROQ</span>
         """, unsafe_allow_html=True)
 
         st.markdown("<hr>", unsafe_allow_html=True)
@@ -520,6 +520,37 @@ def render_sidebar():
             if st.button("🎭 Load Demo Profile", use_container_width=True, key="demo_btn"):
                 load_demo_profile()
                 st.rerun()
+
+        st.markdown('<div class="sidebar-section-title">Match a Job Description</div>', unsafe_allow_html=True)
+        with st.form("job_description_matcher"):
+            job_description = st.text_area(
+                "Paste a job description",
+                placeholder="Paste the responsibilities and qualifications here...",
+                height=180,
+                max_chars=12000,
+                label_visibility="collapsed",
+            )
+            match_submitted = st.form_submit_button("🎯 Compare with my profile", use_container_width=True)
+        if match_submitted:
+            if not st.session_state.profile_loaded:
+                st.warning("Load a LinkedIn profile first, then compare it with the job description.")
+            elif len(job_description.strip()) < 50:
+                st.warning("Paste a fuller job description (at least 50 characters) for a useful comparison.")
+            else:
+                st.session_state.messages.append({"role": "user", "content": "Compare my profile with this pasted job description."})
+                st.session_state.memory.add_user_message("Compared profile with a pasted job description.")
+                try:
+                    with st.spinner("Comparing your profile with the job requirements..."):
+                        result = st.session_state.orchestrator.job_fit_agent.analyze_description(
+                            st.session_state.memory.session.profile_data,
+                            job_description.strip(),
+                        )
+                    st.session_state.messages.append({"role": "assistant", "content": result})
+                    st.session_state.memory.add_assistant_message(result)
+                    st.session_state.memory.session.add_analyzed_job("Pasted job description")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Could not analyze this job description: {e}")
 
         st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -599,7 +630,7 @@ def render_sidebar():
         st.markdown("<hr>", unsafe_allow_html=True)
         st.markdown("""
         <div style="font-size:0.72rem; color:#374151; line-height:1.8;">
-            ⚡ Powered by Groq · Llama 3.3 70B<br>
+            ⚡ Powered by Groq · GPT-OSS 120B<br>
             🔑 <a href="https://console.groq.com" target="_blank" style="color:#6366f1;">Get free Groq key</a> &nbsp;·&nbsp;
             <a href="https://apify.com" target="_blank" style="color:#6366f1;">Apify</a>
         </div>
@@ -617,7 +648,7 @@ def render_chat():
         <div class="chat-header-icon">💼</div>
         <div>
             <div class="chat-header-title">Career Coach</div>
-            <div class="chat-header-sub">AI-powered LinkedIn optimizer · Powered by Llama 3.3 70B</div>
+            <div class="chat-header-sub">AI-powered LinkedIn optimizer · Powered by GPT-OSS 120B</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
